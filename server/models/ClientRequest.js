@@ -9,6 +9,7 @@ const util = require('util');
 const clientSettingsMap = require('../../shared/constants/clientSettingsMap');
 const rTorrentPropMap = require('../util/rTorrentPropMap');
 const torrentStatusMap = require('../../shared/constants/torrentStatusMap');
+const addFastResume = require('../util/rTorrentFastResume');
 
 const addTagsToRequest = (tagsArr, requestParameters) => {
   if (tagsArr && tagsArr.length) {
@@ -133,11 +134,20 @@ class ClientRequest {
   // rTorrent method calls.
   addFiles(options) {
     const files = getEnsuredArray(options.files);
-    const {path: destinationPath, isBasePath, start, tags: tagsArr} = options;
+    const {path: destinationPath, isBasePath, start, tags: tagsArr, fastResume} = options;
 
     files.forEach(file => {
       let methodCall = 'load.raw_start';
-      let parameters = ['', file.buffer];
+      let torrentBuffer = file.buffer;
+      if (fastResume === 'true') {
+        try {
+          torrentBuffer = addFastResume(torrentBuffer,path);
+	} catch (err) {
+          torrentBuffer = file.buffer;
+	}
+      }
+
+      let parameters = ['', torrentBuffer];
       const timeAdded = Math.floor(Date.now() / 1000);
 
       if (destinationPath) {

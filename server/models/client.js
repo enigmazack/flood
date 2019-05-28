@@ -15,7 +15,7 @@ const torrentTrackerPropsMap = require('../../shared/constants/torrentTrackerPro
 const client = {
   addFiles(user, services, req, callback) {
     const {files} = req;
-    const {destination: destinationPath, isBasePath, start} = req.body;
+    const {destination: destinationPath, isBasePath, start, fastResume} = req.body;
     let {tags} = req.body;
     const request = new ClientRequest(user, services);
 
@@ -39,6 +39,7 @@ const client = {
         isBasePath,
         start,
         tags,
+        fastResume
       });
 
       // Set the callback for only the last request.

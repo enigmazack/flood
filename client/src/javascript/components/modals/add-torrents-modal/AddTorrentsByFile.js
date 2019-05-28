@@ -97,7 +97,7 @@ class AddTorrentsByFile extends React.Component {
     this.setState({isAddingTorrents: true});
 
     const fileData = new FormData();
-    const {destination, start, tags, useBasePath} = formData;
+    const {destination, start, tags, useBasePath, fastResume} = formData;
 
     this.state.files.forEach(file => {
       fileData.append('torrents', file);
@@ -110,6 +110,7 @@ class AddTorrentsByFile extends React.Component {
     fileData.append('destination', destination);
     fileData.append('isBasePath', useBasePath);
     fileData.append('start', start);
+    fileData.append('fastResume', fastResume);
 
     TorrentActions.addTorrentsByFiles(fileData, destination);
     SettingsStore.updateOptimisticallyOnly({id: 'startTorrentsOnLoad', data: start});

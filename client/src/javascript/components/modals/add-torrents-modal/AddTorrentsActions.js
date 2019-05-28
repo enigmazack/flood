@@ -8,6 +8,17 @@ class AddTorrentsActions extends PureComponent {
   getActions() {
     return [
       {
+        checked: false,
+        clickHandler: this.handleFastResumeToggle,
+        content: this.props.intl.formatMessage({
+          id: 'torrents.add.fastResume.label',
+          defaultMessage: 'Fast Resume'
+        }),
+        id: 'fastResume',
+        triggerDismiss: false,
+        type: 'checkbox'
+      },
+      {
         checked: SettingsStore.getFloodSettings('startTorrentsOnLoad'),
         clickHandler: this.handleStartTorrentsToggle,
         content: this.props.intl.formatMessage({

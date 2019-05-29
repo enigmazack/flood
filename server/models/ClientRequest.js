@@ -141,10 +141,10 @@ class ClientRequest {
       let torrentBuffer = file.buffer;
       if (fastResume === 'true') {
         try {
-          torrentBuffer = addFastResume(torrentBuffer,path);
-	} catch (err) {
+          torrentBuffer = addFastResume(torrentBuffer, destinationPath);
+        } catch (err) {
           torrentBuffer = file.buffer;
-	}
+        }
       }
 
       let parameters = ['', torrentBuffer];

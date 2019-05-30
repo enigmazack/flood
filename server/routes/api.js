@@ -83,4 +83,8 @@ router.patch('/settings', (req, res) => {
   settings.set(req.user, req.body, ajaxUtil.getResponseFn(res));
 });
 
+router.get('/torrents', (req, res) => {
+  res.json(req.services.torrentService.getTorrentList());
+});
+
 module.exports = router;

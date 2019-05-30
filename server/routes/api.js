@@ -87,4 +87,8 @@ router.get('/torrents', (req, res) => {
   res.json(req.services.torrentService.getTorrentList());
 });
 
+router.get('/traffic', (req, res) => {
+  res.json(req.services.historyService.getTransferSummary());
+})
+
 module.exports = router;

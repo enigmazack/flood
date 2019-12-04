@@ -1,6 +1,6 @@
 import axios from 'axios';
-import historySnapshotTypes from 'universally-shared-code/constants/historySnapshotTypes';
-import serverEventTypes from 'universally-shared-code/constants/serverEventTypes';
+import historySnapshotTypes from '@shared/constants/historySnapshotTypes';
+import serverEventTypes from '@shared/constants/serverEventTypes';
 
 import AppDispatcher from '../dispatcher/AppDispatcher';
 import ActionTypes from '../constants/ActionTypes';
@@ -45,6 +45,8 @@ const FloodActions = {
       this.handleClientConnectivityStatusChange,
     );
 
+    activityStreamEventSource.removeEventListener(serverEventTypes.DISK_USAGE_CHANGE, this.handleDiskUsageChange);
+
     activityStreamEventSource.removeEventListener(
       serverEventTypes.NOTIFICATION_COUNT_CHANGE,
       this.handleNotificationCountChange,
@@ -88,25 +90,12 @@ const FloodActions = {
         params: options,
       })
       .then((json = {}) => json.data)
-      .then(
-        response => {
-          AppDispatcher.dispatchServerAction({
-            type: ActionTypes.FLOOD_FETCH_DIRECTORY_LIST_SUCCESS,
-            data: {
-              ...options,
-              ...response,
-            },
-          });
-        },
-        (error = {}) => {
-          const {response: errorData} = error;
-
-          AppDispatcher.dispatchServerAction({
-            type: ActionTypes.FLOOD_FETCH_DIRECTORY_LIST_ERROR,
-            error: errorData,
-          });
-        },
-      ),
+      .then(response => {
+        return {
+          ...options,
+          ...response,
+        };
+      }),
 
   fetchMediainfo: options =>
     axios
@@ -116,23 +105,15 @@ const FloodActions = {
         },
       })
       .then((json = {}) => json.data)
-      .then(
-        response => {
-          AppDispatcher.dispatchServerAction({
-            type: ActionTypes.FLOOD_FETCH_MEDIAINFO_SUCCESS,
-            data: {
-              ...response,
-              ...options,
-            },
-          });
-        },
-        error => {
-          AppDispatcher.dispatchServerAction({
-            type: ActionTypes.FLOOD_FETCH_MEDIAINFO_ERROR,
-            error,
-          });
-        },
-      ),
+      .then(response => {
+        AppDispatcher.dispatchServerAction({
+          type: ActionTypes.FLOOD_FETCH_MEDIAINFO_SUCCESS,
+          data: {
+            ...response,
+            ...options,
+          },
+        });
+      }),
 
   fetchNotifications: options =>
     axios
@@ -169,7 +150,12 @@ const FloodActions = {
       data: JSON.parse(event.data),
     });
   },
-
+  handleDiskUsageChange(event) {
+    AppDispatcher.dispatchServerAction({
+      type: ActionTypes.DISK_USAGE_CHANGE,
+      data: JSON.parse(event.data),
+    });
+  },
   handleNotificationCountChange(event) {
     AppDispatcher.dispatchServerAction({
       type: ActionTypes.NOTIFICATION_COUNT_CHANGE,
@@ -253,6 +239,8 @@ const FloodActions = {
         serverEventTypes.CLIENT_CONNECTIVITY_STATUS_CHANGE,
         this.handleClientConnectivityStatusChange,
       );
+
+      activityStreamEventSource.addEventListener(serverEventTypes.DISK_USAGE_CHANGE, this.handleDiskUsageChange);
 
       activityStreamEventSource.addEventListener(
         serverEventTypes.NOTIFICATION_COUNT_CHANGE,

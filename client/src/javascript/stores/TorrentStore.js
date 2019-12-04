@@ -1,4 +1,4 @@
-import serverEventTypes from 'universally-shared-code/constants/serverEventTypes';
+import serverEventTypes from '@shared/constants/serverEventTypes';
 
 import ActionTypes from '../constants/ActionTypes';
 import AlertStore from './AlertStore';
@@ -143,10 +143,6 @@ class TorrentStoreClass extends BaseStore {
       },
       id: 'alert.torrent.add',
     });
-  }
-
-  handleFetchMediainfoError(error) {
-    this.emit(EventTypes.FLOOD_FETCH_MEDIAINFO_ERROR, error);
   }
 
   handleFetchMediainfoSuccess(response) {
@@ -325,9 +321,6 @@ TorrentStore.dispatcherID = AppDispatcher.register(payload => {
       break;
     case ActionTypes.FLOOD_FETCH_MEDIAINFO_SUCCESS:
       TorrentStore.handleFetchMediainfoSuccess(action.data);
-      break;
-    case ActionTypes.FLOOD_FETCH_MEDIAINFO_ERROR:
-      TorrentStore.handleFetchMediainfoError(action.error);
       break;
     case ActionTypes.UI_CLICK_TORRENT:
       TorrentStore.setSelectedTorrents(action.data.event, action.data.hash);

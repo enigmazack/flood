@@ -6,6 +6,7 @@ import SettingsStore from '../../../stores/SettingsStore';
 
 class AddTorrentsActions extends PureComponent {
   getActions() {
+    const startTorrentsOnLoad = SettingsStore.getFloodSettings('startTorrentsOnLoad');
     return [
       {
         checked: false,
@@ -19,7 +20,7 @@ class AddTorrentsActions extends PureComponent {
         type: 'checkbox'
       },
       {
-        checked: SettingsStore.getFloodSettings('startTorrentsOnLoad'),
+        checked: startTorrentsOnLoad === 'true' || startTorrentsOnLoad === true,
         clickHandler: this.handleStartTorrentsToggle,
         content: this.props.intl.formatMessage({
           id: 'torrents.add.start.label',

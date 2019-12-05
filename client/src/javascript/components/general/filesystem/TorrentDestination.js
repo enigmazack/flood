@@ -9,7 +9,13 @@ import Search from '../../icons/Search';
 import SettingsStore from '../../../stores/SettingsStore';
 import UIStore from '../../../stores/UIStore';
 
-class NewTorrentDestination extends React.Component {
+class TorrentDestination extends React.Component {
+  contextMenuInstanceRef = null;
+
+  contextMenuNodeRef = null;
+
+  textboxRef = null;
+
   constructor(props) {
     super(props);
 
@@ -21,21 +27,21 @@ class NewTorrentDestination extends React.Component {
 
     this.state = {
       destination,
-      isBasePath: false,
       isDirectoryListOpen: false,
     };
-
-    this.handleWindowResize = _.debounce(this.handleWindowResize, 100);
   }
 
   componentDidMount() {
     UIStore.listen(EventTypes.UI_MODAL_DISMISSED, this.handleModalDismiss);
+    // TODO: Fix ContextMenu in flood-ui-kit and remove the forced double render
+    // https://github.com/jfurrow/flood-ui-kit/issues/6
+    this.forceUpdate();
   }
 
-  componentWillUpdate(_nextProps, nextState) {
-    if (!this.state.isDirectoryListOpen && nextState.isDirectoryListOpen) {
+  componentDidUpdate(_prevProps, prevState) {
+    if (!prevState.isDirectoryListOpen && this.state.isDirectoryListOpen) {
       this.addDestinationOpenEventListeners();
-    } else if (this.state.isDirectoryListOpen && !nextState.isDirectoryListOpen) {
+    } else if (prevState.isDirectoryListOpen && !this.state.isDirectoryListOpen) {
       this.removeDestinationOpenEventListeners();
     }
   }
@@ -50,37 +56,27 @@ class NewTorrentDestination extends React.Component {
     global.addEventListener('resize', this.handleWindowResize);
   }
 
-  contextMenuInstanceRef = null;
-
-  contextMenuNodeRef = null;
-
   closeDirectoryList = () => {
     if (this.state.isDirectoryListOpen) {
       this.setState({isDirectoryListOpen: false});
     }
   };
 
-  getValue() {
-    return this.getDestination();
-  }
+  /* eslint-disable react/sort-comp */
+  handleDestinationInputChange = _.debounce(
+    () => {
+      const destination = this.textboxRef.value;
 
-  getDestination() {
-    return this.state.destination;
-  }
+      if (this.props.onChange) {
+        this.props.onChange(destination);
+      }
 
-  handleBasePathCheckBoxCheck = value => {
-    this.setState({isBasePath: value});
-  };
-
-  handleDestinationChange = event => {
-    const destination = event.target.value;
-
-    if (this.props.onChange) {
-      this.props.onChange(destination);
-    }
-
-    this.setState({destination});
-  };
+      this.setState({destination});
+    },
+    100,
+    {leading: true},
+  );
+  /* eslint-enable react/sort-comp */
 
   handleDirectoryListButtonClick = () => {
     this.setState(state => {
@@ -93,8 +89,7 @@ class NewTorrentDestination extends React.Component {
   };
 
   handleDirectorySelection = destination => {
-    // eslint-disable-next-line react/no-direct-mutation-state
-    this.state.textboxRef.value = destination;
+    this.textboxRef.value = destination;
     this.setState({destination});
   };
 
@@ -110,20 +105,10 @@ class NewTorrentDestination extends React.Component {
     this.closeDirectoryList();
   };
 
-  isBasePath() {
-    return this.state.isBasePath;
-  }
-
   removeDestinationOpenEventListeners() {
     global.document.removeEventListener('click', this.handleDocumentClick);
     global.removeEventListener('resize', this.handleWindowResize);
   }
-
-  setTextboxRef = ref => {
-    if (this.state.textboxRef !== ref) {
-      this.setState({textboxRef: ref});
-    }
-  };
 
   toggleOpenState = () => {
     this.setState(state => {
@@ -134,27 +119,31 @@ class NewTorrentDestination extends React.Component {
   };
 
   render() {
+    const {destination, isDirectoryListOpen} = this.state;
+
     return (
       <FormRowGroup>
         <FormRow>
           <Textbox
             addonPlacement="after"
-            defaultValue={this.state.destination}
+            defaultValue={destination}
             id={this.props.id}
             label={this.props.label}
-            onChange={this.handleDestinationChange}
+            onChange={this.handleDestinationInputChange}
             onClick={event => event.nativeEvent.stopImmediatePropagation()}
             placeholder={this.props.intl.formatMessage({
               id: 'torrents.add.destination.placeholder',
               defaultMessage: 'Destination',
             })}
-            setRef={this.setTextboxRef}>
+            setRef={ref => {
+              this.textboxRef = ref;
+            }}>
             <FormElementAddon onClick={this.handleDirectoryListButtonClick}>
               <Search />
             </FormElementAddon>
             <Portal>
               <ContextMenu
-                in={this.state.isDirectoryListOpen}
+                in={isDirectoryListOpen}
                 onClick={event => event.nativeEvent.stopImmediatePropagation()}
                 overlayProps={{isInteractive: false}}
                 padding={false}
@@ -165,9 +154,9 @@ class NewTorrentDestination extends React.Component {
                   this.contextMenuNodeRef = ref;
                 }}
                 scrolling={false}
-                triggerRef={this.state.textboxRef}>
+                triggerRef={this.textboxRef}>
                 <FilesystemBrowser
-                  directory={this.state.destination}
+                  directory={destination}
                   intl={this.props.intl}
                   maxHeight={
                     this.contextMenuInstanceRef &&
@@ -190,4 +179,4 @@ class NewTorrentDestination extends React.Component {
   }
 }
 
-export default injectIntl(NewTorrentDestination, {withRef: true});
+export default injectIntl(TorrentDestination, {withRef: true});

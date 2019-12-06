@@ -91,4 +91,8 @@ router.get('/traffic', (req, res) => {
   res.json(req.services.historyService.getTransferSummary());
 })
 
+router.get('/disk', (req, res) => {
+    res.json(req.services.historyService.getDiskUsage());
+  })
+
 module.exports = router;

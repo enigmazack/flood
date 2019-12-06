@@ -92,7 +92,7 @@ router.get('/traffic', (req, res) => {
 })
 
 router.get('/disk', (req, res) => {
-    res.json(req.services.historyService.getDiskUsage());
+    res.json(req.services.diskUsageService.getDiskUsage());
   })
 
 module.exports = router;

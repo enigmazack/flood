@@ -1,5 +1,7 @@
 # Flood
 
+[Readme for this fork](docs/DIFF.md)
+
 ![Flood logo](flood.png)
 
 [![Travis CI build status badge](https://img.shields.io/travis/Flood-UI/flood/master.svg?style=flat-square)](https://travis-ci.org/Flood-UI/flood) [![Discord server badge](https://img.shields.io/discord/418267176873623553.svg?style=flat-square)](https://discord.gg/Z7yR5Uf)

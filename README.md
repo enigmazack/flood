@@ -1,6 +1,6 @@
 # Flood
 
-[Readme for this fork](docs/DIFF.md)
+[Readme for this fork](documents/DIFF.md)
 
 ![Flood logo](flood.png)
 

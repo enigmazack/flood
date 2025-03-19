@@ -222,6 +222,14 @@ abstract class ClientGatewayService extends BaseService<ClientGatewayServiceEven
       .catch(() => undefined);
   }
 
+  async fetchTorrent(hash: TorrentProperties['hash']): Promise<TorrentListSummary> {
+    const torrentListSummary = {
+      id: Date.now(),
+      torrents: {},
+    };
+    return torrentListSummary;
+  }
+
   destroyTimer() {
     if (this.retryTimer != null) {
       clearTimeout(this.retryTimer);

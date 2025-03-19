@@ -76,6 +76,14 @@ class TorrentService extends BaseService<TorrentServiceEvents> {
     );
   };
 
+  fetchTorrent = (hash: TorrentProperties['hash']) => {
+    if (this.pollTimeout != null) {
+      clearTimeout(this.pollTimeout);
+    }
+
+    return this.services?.clientGatewayService?.fetchTorrent(hash) || Promise.resolve(null);
+  };
+
   getTorrent(hash: TorrentProperties['hash']) {
     return this.torrentListSummary.torrents[hash.toUpperCase()];
   }

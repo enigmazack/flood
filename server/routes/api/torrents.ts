@@ -630,6 +630,19 @@ router.get<{hashes: string}>(
  * @security User
  * @param {string} hash.path - Hash of a torrent
  */
+router.get(
+  '/:hash',
+  async (req, res): Promise<Response> =>
+    req.services.torrentService
+      .fetchTorrent(req.params.hash)
+      .then((data) => {
+        if (data == null) {
+          throw new Error();
+        }
+        return res.status(200).json(data);
+      })
+      .catch(({code, message}) => res.status(500).json({code, message})),
+);
 
 /**
  * GET /api/torrents/{hash}/contents

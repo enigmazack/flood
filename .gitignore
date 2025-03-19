@@ -70,3 +70,5 @@ coverage/
 # Test results
 cypress/videos
 cypress/screenshots
+
+package-lock.json
